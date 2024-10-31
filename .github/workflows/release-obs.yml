@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -24,7 +24,7 @@ jobs:
         run: cargo obs-build --out-dir out --tag ${{ github.event.inputs.obs_version }}
 
       - name: Install 7z
-        run: sudo apt-get install -y p7zip-full
+        run: choco install 7zip
 
       - name: Compress output directory
         run: 7z a -t7z -mx=9 obs-build.7z out/*
