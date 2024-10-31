@@ -40,7 +40,7 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            latest_release=$(cat .latest_release)
+            const latest_release=require("fs").readFileSync(".latest_release", "utf8").trim()
             github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
