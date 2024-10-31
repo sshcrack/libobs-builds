@@ -50,3 +50,5 @@ jobs:
                 obs_version: latest_release
               }
             })
+        env:
+          GITHUB_TOKEN: ${{ secrets.DISPATCH_KEY }}
