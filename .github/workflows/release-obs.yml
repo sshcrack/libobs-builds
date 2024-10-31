@@ -29,7 +29,10 @@ jobs:
         run: choco install 7zip
 
       - name: Compress output directory
-        run: 7z a -t7z -mx=9 obs-build.7z out/*
+        run: |
+          cd out
+          7z a -t7z -mx=9 ../obs-build.7z .
+          cd ..
 
       - name: Create GitHub Release
         id: create_release
