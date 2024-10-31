@@ -13,6 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache latest release
+        id: cache_latest_release
+        uses: actions/cache@v3
+        with:
+          path: .latest_release
+          key: latest-release
+
       - name: Get latest release
         id: get_release
         run: |
@@ -42,3 +49,11 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.DISPATCH_KEY }}" \
           https://api.github.com/repos/sshcrack/obs-builds-clipture/actions/workflows/release-obs.yml/dispatches \
           -d '{"ref": "master", "inputs": {"obs_version":"${{ env.latest_release }}"}}'
+
+      - name: Update cache
+        if: env.new_release == 'true'
+        uses: actions/cache@v3
+        with:
+          path: .latest_release
+          key: latest-release
+          restore-keys: latest-release
