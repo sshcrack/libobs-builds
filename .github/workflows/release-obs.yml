@@ -1,0 +1,51 @@
+name: Build OBS
+
+on:
+  workflow_dispatch:
+    inputs:
+      obs_version:
+        description: 'OBS Version'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install cargo-obs-build
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: cargo-obs-build
+
+      - name: Build OBS
+        run: cargo obs-build --out-dir out
+
+      - name: Install 7z
+        run: sudo apt-get install -y p7zip-full
+
+      - name: Compress output directory
+        run: 7z a -t7z -mx=9 obs-build.7z out/*
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: obs-build-${{ github.event.inputs.obs_version }}
+          release_name: OBS Build ${{ github.event.inputs.obs_version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./obs-build.7z
+          asset_name: obs-build.7z
+          asset_content_type: application/x-7z-compressed
