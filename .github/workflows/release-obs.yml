@@ -21,7 +21,7 @@ jobs:
           crate: cargo-obs-build
 
       - name: Build OBS
-        run: cargo obs-build --out-dir out
+        run: cargo obs-build --out-dir out --tag ${{ github.event.inputs.obs_version }}
 
       - name: Install 7z
         run: sudo apt-get install -y p7zip-full
