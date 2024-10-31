@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -40,3 +42,4 @@ jobs:
           draft: false
           prerelease: false
           artifacts: obs-build.7z
+          artifactContentType: application/x-7z-compressed
