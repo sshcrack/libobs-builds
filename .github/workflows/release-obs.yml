@@ -36,8 +36,7 @@ jobs:
 
       - name: Generate SHA-256 hash
         run: |
-          certutil -hashfile obs-build.7z SHA256 > obs-build.sha256
-          echo obs-build.7z >> obs-build.sha256
+          certutil -hashfile obs-build.7z SHA256 | findstr /v "SHA256" | findstr /v "CertUtil" > obs-build.sha256
 
       - name: Create GitHub Release
         id: create_release
