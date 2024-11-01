@@ -31,12 +31,12 @@ jobs:
       - name: Compress output directory
         run: |
           cd out
-          7z a -tzip -m0=lzma -mx=9 ../obs-build.zip .
+          7z a -t7z -mx=9 ../obs-build.7z .
           cd ..
 
       - name: Generate SHA-256 hash
         run: |
-          certutil -hashfile obs-build.zip SHA256 | findstr /v "SHA256" | findstr /v "CertUtil" > obs-build.sha256
+          certutil -hashfile obs-build.7z SHA256 | findstr /v "SHA256" | findstr /v "CertUtil" > obs-build.sha256
 
       - name: Create GitHub Release
         id: create_release
@@ -49,6 +49,6 @@ jobs:
           draft: false
           prerelease: false
           artifacts: |
-            obs-build.zip
+            obs-build.7z
             obs-build.sha256
-          artifactContentType: application/zip
+          artifactContentType: application/x-7z-compressed
