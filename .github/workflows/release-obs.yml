@@ -34,6 +34,11 @@ jobs:
           7z a -t7z -mx=9 ../obs-build.7z .
           cd ..
 
+      - name: Generate SHA-256 hash
+        run: |
+          certutil -hashfile obs-build.7z SHA256 > obs-build.sha256
+          echo obs-build.7z >> obs-build.sha256
+
       - name: Create GitHub Release
         id: create_release
         uses: ncipollo/release-action@v1
@@ -44,5 +49,7 @@ jobs:
           makeLatest: true
           draft: false
           prerelease: false
-          artifacts: obs-build.7z
+          artifacts: |
+            obs-build.7z
+            obs-build.sha256
           artifactContentType: application/x-7z-compressed
