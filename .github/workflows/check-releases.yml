@@ -3,7 +3,7 @@ name: Check for obs-studio Releases
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 * * * *" # Runs every hour
+    - cron: "0 */3 * * *" # Runs every hour
 
 jobs:
   check-releases:
