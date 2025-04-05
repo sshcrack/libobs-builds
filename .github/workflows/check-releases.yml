@@ -3,7 +3,7 @@ name: Check for obs-studio Releases
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */3 * * *" # Runs every 3 hours
+    - cron: "0 */3 * * *" # Runs every hour
 
 jobs:
   check-releases:
@@ -30,11 +30,8 @@ jobs:
         id: check_release
         run: |
           echo "Latest release is ${{ env.latest_release }}"
-          if [ -f .latest_release ] && [ "${{ env.latest_release }}" != "$(cat .latest_release)" ]; then
+          if [ "${{ env.latest_release }}" != "$(cat .latest_release)" ]; then
             echo "New release found"
-            echo "new_release=true" >> $GITHUB_ENV
-          elif [ ! -f .latest_release ]; then
-            echo "First run, creating release file"
             echo "new_release=true" >> $GITHUB_ENV
           else
             echo "No new release"
@@ -50,9 +47,8 @@ jobs:
         run: |
           curl -L -X POST -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.DISPATCH_KEY }}" \
-          -H "Content-Type: application/json" \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/release-obs.yml/dispatches \
-          -d '{"ref": "${{ github.ref_name }}", "inputs": {"obs_version":"${{ env.latest_release }}"}}'
+          https://api.github.com/repos/sshcrack/obs-builds-clipture/actions/workflows/release-obs.yml/dispatches \
+          -d '{"ref": "master", "inputs": {"obs_version":"${{ env.latest_release }}"}}'
 
       - name: Update cache
         if: env.new_release == 'true'
@@ -60,3 +56,4 @@ jobs:
         with:
           path: .latest_release
           key: latest-release
+          restore-keys: latest-release

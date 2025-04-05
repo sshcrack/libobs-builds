@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       obs_version:
-        description: "OBS Version"
+        description: 'OBS Version'
         required: true
 
 jobs:
@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: true
 
       - name: Install cargo-obs-build
         uses: baptiste0928/cargo-install@v3
@@ -26,16 +24,6 @@ jobs:
 
       - name: Build OBS
         run: cargo obs-build --out-dir out --tag ${{ github.event.inputs.obs_version }}
-
-      - name: Run dummyDLL
-        run: |
-          .\dummy-dll-generator\dummyDLL.exe out\obs.dll
-
-      - name: Rename out.dll to obs-dummy.dll
-        run: |
-          if (Test-Path "out.dll") {
-            Move-Item -Path "out.dll" -Destination "obs-dummy.dll" -Force
-          }
 
       - name: Install 7z
         run: choco install 7zip
@@ -63,5 +51,4 @@ jobs:
           artifacts: |
             obs-build.7z
             obs-build.sha256
-            obs-dummy.dll
           artifactContentType: application/x-7z-compressed
