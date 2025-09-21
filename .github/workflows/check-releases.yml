@@ -59,4 +59,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .latest_release
-          key: latest-release
+          key: ${{ steps.cache_latest_release.outputs.cache-primary-key }}
