@@ -19,6 +19,8 @@ jobs:
         with:
           path: .latest_release
           key: latest-release
+          restore-keys: |
+            latest-release
 
       - name: Get latest release
         id: get_release
@@ -59,4 +61,4 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .latest_release
-          key: ${{ steps.cache_latest_release.outputs.cache-primary-key }}
+          key: latest-release-${{ env.latest_release }}
