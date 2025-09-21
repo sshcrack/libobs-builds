@@ -13,15 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache latest release
-        id: cache_latest_release
-        uses: actions/cache/restore@v4
-        with:
-          path: .latest_release
-          key: latest-release
-          restore-keys: |
-            latest-release
-
       - name: Get latest release
         id: get_release
         run: |
@@ -32,10 +23,10 @@ jobs:
         id: check_release
         run: |
           echo "Latest release is ${{ env.latest_release }}"
-          if [ -f .latest_release ] && [ "${{ env.latest_release }}" != "$(cat .latest_release)" ]; then
+          if [ -f latest_release ] && [ "${{ env.latest_release }}" != "$(cat latest_release)" ]; then
             echo "New release found"
             echo "new_release=true" >> $GITHUB_ENV
-          elif [ ! -f .latest_release ]; then
+          elif [ ! -f latest_release ]; then
             echo "First run, creating release file"
             echo "new_release=true" >> $GITHUB_ENV
           else
@@ -43,9 +34,18 @@ jobs:
             echo "new_release=false" >> $GITHUB_ENV
           fi
 
-      - name: Save latest release
+      - name: Update latest release file
         if: env.new_release == 'true'
-        run: echo "${{ env.latest_release }}" > .latest_release
+        run: echo "${{ env.latest_release }}" > latest_release
+
+      - name: Commit latest release file
+        if: env.new_release == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add latest_release
+          git commit -m "Update latest release to ${{ env.latest_release }}"
+          git push
 
       - name: Trigger build-obs workflow
         if: env.new_release == 'true'
@@ -55,10 +55,3 @@ jobs:
           -H "Content-Type: application/json" \
           https://api.github.com/repos/${{ github.repository }}/actions/workflows/release-obs.yml/dispatches \
           -d '{"ref": "${{ github.ref_name }}", "inputs": {"obs_version":"${{ env.latest_release }}"}}'
-
-      - name: Update cache
-        if: env.new_release == 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: .latest_release
-          key: latest-release-${{ env.latest_release }}
