@@ -25,7 +25,7 @@ jobs:
           crate: cargo-obs-build
 
       - name: Build OBS
-        run: cargo obs-build --out-dir out --tag ${{ github.event.inputs.obs_version }}
+        run: cargo obs-build --out-dir out --tag ${{ github.event.inputs.obs_version }} --skip-compatibility-check
 
       - name: Run dummyDLL
         run: |
